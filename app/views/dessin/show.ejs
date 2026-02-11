@@ -1,0 +1,40 @@
+<%- include("../partials/header") %>
+
+<section class="card">
+  <h2><%= dessin.title %></h2>
+
+  <% if (dessin.image) { %>
+    <img class="detail-img" src="<%= dessin.image %>" alt="<%= dessin.title %>">
+  <% } %>
+
+  <p class="muted">
+    <strong>Type :</strong> <%= dessin.type %>
+    <% if (dessin.createdAt) { %> • <strong>Date :</strong> <%= dessin.createdAt %> <% } %>
+  </p>
+
+  <% if (dessin.description) { %>
+    <p><%= dessin.description %></p>
+  <% } %>
+
+  <% if (dessin.tags && dessin.tags.length) { %>
+    <p><strong>Tags :</strong>
+      <% dessin.tags.forEach(t => { %>
+        <span class="tag"><%= t %></span>
+      <% }) %>
+    </p>
+  <% } %>
+
+<div class="actions">
+  <a class="btn secondary" href="/dessin">Retour galerie</a>
+
+  <form method="POST" action="/dessin/<%= dessin.id %>/delete"
+        onsubmit="return confirm('Supprimer ?');"
+        style="display:inline;">
+    <button class="btn" type="submit">Supprimer</button>
+  </form>
+</div>
+
+
+</section>
+
+<%- include("../partials/footer") %>

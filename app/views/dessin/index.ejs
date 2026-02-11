@@ -1,0 +1,37 @@
+<%- include("../partials/header") %>
+
+<section class="card">
+  <div class="row">
+    <h2>Galerie</h2>
+
+    <form method="GET" action="/dessin" class="filter">
+      <label for="type">Filtrer par type</label>
+      <select name="type" id="type" onchange="this.form.submit()">
+        <option value="">Tous</option>
+        <% types.forEach(s => { %>
+          <option value="<%= s %>" <%= selectedtype === s ? "selected" : "" %>><%= s %></option>
+        <% }) %>
+      </select>
+      <noscript><button class="btn secondary" type="submit">Filtrer</button></noscript>
+    </form>
+  </div>
+
+  <% if (!dessins.length) { %>
+    <p>Rien.</p>
+  <% } else { %>
+    <div class="grid">
+      <% dessins.forEach(d => { %>
+        <a class="tile" href="/dessin/<%= d.id %>">
+        <% if (d.image) { %>
+            <img class="thumb" src="<%= d.image %>" alt="<%= d.title %>">
+        <% } %>
+        <h3><%= d.title %></h3>
+        <p class="muted"><%= d.type %> • <%= d.createdAt %></p>
+        </a>
+
+      <% }) %>
+    </div>
+  <% } %>
+</section>
+
+<%- include("../partials/footer") %>

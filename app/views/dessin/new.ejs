@@ -1,0 +1,49 @@
+<%- include("../partials/header") %>
+
+<section class="card">
+  <h2>Ajouter un dessin</h2>
+
+  <% if (errors.length) { %>
+    <div class="alert">
+      <strong>Erreurs :</strong>
+      <ul>
+        <% errors.forEach(e => { %><li><%= e %></li><% }) %>
+      </ul>
+    </div>
+  <% } %>
+
+  <form method="POST" action="/dessin" class="form">
+    <label>
+      Titre *
+      <input name="title" value="<%= values.title %>" required minlength="1">
+    </label>
+
+    <label>
+      Type *
+      <input name="type" value="<%= values.type %>" required minlength="1" placeholder="Sketch, Illustration...">
+    </label>
+
+    <label>
+      Date
+      <input type="date" name="createdAt" value="<%= values.createdAt %>">
+    </label>
+
+    <label>
+      Tags
+      <input name="tags" value="<%= values.tags %>" placeholder="Séparé par des virgules">
+    </label>
+
+    <label>
+      Image
+      <input name="image" value="<%= values.image %>" placeholder="image.png ou /uploads/image.png">
+      <small class="muted">Doit être dans <code>public/uploads</code>.</small>
+    </label>
+
+    <div class="actions">
+      <button class="btn" type="submit">Ajouter</button>
+      <a class="btn secondary" href="/dessin">Annuler</a>
+    </div>
+  </form>
+</section>
+
+<%- include("../partials/footer") %>
