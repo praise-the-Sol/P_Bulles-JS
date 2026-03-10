@@ -6,6 +6,8 @@ const dessinroute = require("./src/routes/dessinroute");
 
 const app = express();
 
+const { initDb } = require("./src/db");
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
@@ -32,4 +34,20 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`UP sur localhost:${PORT}`));
+
+async function start() {
+  for (let i = 0; i < 30; i++) {
+    try {
+      await initDb();
+      console.log("DB OK");
+      break;
+    } catch (e) {
+      console.log("DB pas prête, retry...", i + 1);
+      await new Promise(r => setTimeout(r, 1000));
+    }
+  }
+
+  app.listen(PORT, () => console.log(`UP sur http://localhost:${PORT}`));
+}
+
+start();

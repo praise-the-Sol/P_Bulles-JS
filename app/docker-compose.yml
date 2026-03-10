@@ -1,4 +1,21 @@
 services:
+  db:
+    image: mariadb:11
+    ports:
+      - "3306:3306"
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpass
+      MARIADB_DATABASE: solart
+      MARIADB_USER: solart
+      MARIADB_PASSWORD: solartpass
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-uroot", "-prootpass"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
   sol-art:
     build: .
     ports:
@@ -8,4 +25,14 @@ services:
       - /usr/src/app/node_modules
     environment:
       - NODE_ENV=development
+      - DB_HOST=db
+      - DB_USER=solart
+      - DB_PASSWORD=solartpass
+      - DB_NAME=solart
+    depends_on:
+      db:
+        condition: service_healthy
     command: npm run dev
+
+volumes:
+  db_data:

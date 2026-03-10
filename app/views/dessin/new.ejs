@@ -12,7 +12,7 @@
     </div>
   <% } %>
 
-  <form method="POST" action="/dessin" class="form">
+  <form method="POST" action="/dessin" class="form" enctype="multipart/form-data">
     <label>
       Titre *
       <input name="title" value="<%= values.title %>" required minlength="1">
@@ -34,9 +34,8 @@
     </label>
 
     <label>
-      Image
-      <input name="image" value="<%= values.image %>" placeholder="image.png ou /uploads/image.png">
-      <small class="muted">Doit être dans <code>public/uploads</code>.</small>
+      Image*
+      <input type="file" name="imageFile" accept="image/*" required>
     </label>
 
     <div class="actions">

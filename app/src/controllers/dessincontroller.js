@@ -1,28 +1,23 @@
 const modeldessin = require("../models/modeldessin");
-const path = require("path");
 
 function normalizeTags(input) {
   if (!input) return [];
-  return input
-    .split(",")
-    .map((t) => t.trim())
-    .filter(Boolean);
+  return input.split(",").map(t => t.trim()).filter(Boolean);
 }
 
 async function index(req, res, next) {
   try {
     const type = req.query.type || "";
-
     const dessins = await modeldessin.getAll({ type: type || undefined });
 
     const all = await modeldessin.getAll();
-    const types = [...new Set(all.map((d) => d.type).filter(Boolean))].sort();
+    const types = [...new Set(all.map(d => d.type).filter(Boolean))].sort();
 
     res.render("dessin/index", {
       pageTitle: "Portfolio",
       dessins,
       types,
-      selectedtype: type,
+      selectedtype: type
     });
   } catch (err) {
     next(err);
@@ -35,7 +30,7 @@ async function show(req, res, next) {
     if (!dessin) {
       return res.status(404).render("error", {
         pageTitle: "Introuvable",
-        message: "Dessin introuvable.",
+        message: "Dessin introuvable."
       });
     }
     res.render("dessin/show", { pageTitle: dessin.title, dessin });
@@ -48,41 +43,23 @@ function newForm(req, res) {
   res.render("dessin/new", {
     pageTitle: "Ajouter un dessin",
     errors: [],
-    values: { title: "", type: "", createdAt: "", tags: "", image: "" }
+    values: { title: "", type: "", createdAt: "", tags: "" }
   });
 }
 
-
 async function create(req, res, next) {
   try {
-    const { title, type, tags, createdAt, image } = req.body;
+    const { title, type, tags, createdAt } = req.body;
 
     const errors = [];
-    if (!title || title.trim().length < 1) errors.push("Titre obligatoire.");
-    if (!type || type.trim().length < 1) errors.push("Type obligatoire.");
-
-    let imageUrl = "";
-    if (image && image.trim()) {
-      const raw = image.trim();
-      if (raw.startsWith("/uploads/")) {
-        imageUrl = raw;
-      } else {
-        const filename = path.basename(raw);
-        imageUrl = `/uploads/${filename}`;
-      }
-    }
+    if (!title || title.trim().length < 2) errors.push("Titre obligatoire (min 2 caractères).");
+    if (!type || type.trim().length < 2) errors.push("Type obligatoire (min 2 caractères).");
 
     if (errors.length) {
       return res.status(400).render("dessin/new", {
-        pageTitle: "Ajouter",
+        pageTitle: "Ajouter un dessin",
         errors,
-        values: {
-          title: title || "",
-          type: type || "",
-          createdAt: createdAt || "",
-          tags: tags || "",
-          image: image || ""
-        }
+        values: { title: title || "", type: type || "", createdAt: createdAt || "", tags: tags || "" }
       });
     }
 
@@ -91,7 +68,9 @@ async function create(req, res, next) {
       type: type.trim(),
       tags: normalizeTags(tags),
       createdAt: createdAt && createdAt.trim() ? createdAt.trim() : undefined,
-      image: imageUrl
+      imageBuffer: req.file ? req.file.buffer : null,
+      imageMime: req.file ? req.file.mimetype : null,
+      imageName: req.file ? req.file.originalname : null
     });
 
     res.redirect(`/dessin/${created.id}`);
@@ -100,23 +79,31 @@ async function create(req, res, next) {
   }
 }
 
+async function image(req, res, next) {
+  try {
+    const img = await modeldessin.getImageById(req.params.id);
+    if (!img) return res.status(404).send("Image introuvable");
+
+    res.setHeader("Content-Type", img.mime);
+    res.send(img.buffer);
+  } catch (err) {
+    next(err);
+  }
+}
+
 async function destroy(req, res, next) {
   try {
     const removed = await modeldessin.removeById(req.params.id);
-
-    console.log("DELETE:", req.params.id, "->", removed ? "OK" : "NOT FOUND");
-
     if (!removed) {
       return res.status(404).render("error", {
         pageTitle: "Introuvable",
         message: "Dessin introuvable."
       });
     }
-
     res.redirect("/dessin");
   } catch (err) {
     next(err);
   }
 }
 
-module.exports = { index, show, newForm, create, destroy };
+module.exports = { index, show, newForm, create, destroy, image };

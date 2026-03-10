@@ -3,8 +3,8 @@
 <section class="card">
   <h2><%= dessin.title %></h2>
 
-  <% if (dessin.image) { %>
-    <img class="detail-img" src="<%= dessin.image %>" alt="<%= dessin.title %>">
+  <% if (dessin.hasImage) { %>
+    <img class="detail-img" src="/dessin/<%= dessin.id %>/image" alt="<%= dessin.title %>">
   <% } %>
 
   <p class="muted">

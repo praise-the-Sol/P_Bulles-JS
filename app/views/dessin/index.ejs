@@ -8,8 +8,8 @@
       <label for="type">Filtrer par type</label>
       <select name="type" id="type" onchange="this.form.submit()">
         <option value="">Tous</option>
-        <% types.forEach(s => { %>
-          <option value="<%= s %>" <%= selectedtype === s ? "selected" : "" %>><%= s %></option>
+        <% types.forEach(t => { %>
+          <option value="<%= t %>" <%= selectedtype === t ? "selected" : "" %>><%= t %></option>
         <% }) %>
       </select>
       <noscript><button class="btn secondary" type="submit">Filtrer</button></noscript>
@@ -17,18 +17,17 @@
   </div>
 
   <% if (!dessins.length) { %>
-    <p>Rien.</p>
+    <p>Aucun dessin.</p>
   <% } else { %>
     <div class="grid">
       <% dessins.forEach(d => { %>
         <a class="tile" href="/dessin/<%= d.id %>">
-        <% if (d.image) { %>
-            <img class="thumb" src="<%= d.image %>" alt="<%= d.title %>">
-        <% } %>
-        <h3><%= d.title %></h3>
-        <p class="muted"><%= d.type %> • <%= d.createdAt %></p>
+          <% if (d.hasImage) { %>
+            <img class="thumb" src="/dessin/<%= d.id %>/image" alt="<%= d.title %>">
+          <% } %>
+          <h3><%= d.title %></h3>
+          <p class="muted"><%= d.type %> • <%= d.createdAt %></p>
         </a>
-
       <% }) %>
     </div>
   <% } %>
